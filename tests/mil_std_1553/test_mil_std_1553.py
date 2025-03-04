@@ -26,6 +26,7 @@ THE SOFTWARE.
 import itertools
 import logging
 import os
+import random
 
 import cocotb_test.simulator
 
@@ -33,7 +34,10 @@ import cocotb
 from cocotb.triggers import Timer
 from cocotb.regression import TestFactory
 
-from cocotbext.uart import UartSource, UartSink
+import sys
+sys.path.append("../../")
+
+from cocotbext.mil_std_1553 import MILSTD1553Source, MILSTD1553Sink
 
 
 class TB:
@@ -43,60 +47,48 @@ class TB:
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.DEBUG)
 
-        self.source = UartSource(dut.data, baud=115200)
-        self.sink = UartSink(dut.data, baud=115200)
+        self.source  = MILSTD1553Source(dut.data)
+        self.sink = MILSTD1553Sink(dut.data)
 
 
-async def run_test(dut, payload_lengths=None, payload_data=None):
+async def run_test(dut, payload_data=None):
 
     tb = TB(dut)
 
     await Timer(10, 'us')
 
-    for test_data in [payload_data(x) for x in payload_lengths()]:
+    for test_data in payload_data():
 
-        await tb.source.write(test_data)
+        data = test_data.to_bytes(2, byteorder="little")
 
-        rx_data = bytearray()
+        tb.log.info(f'TEST VALUE : {data}')
 
-        while len(rx_data) < len(test_data):
-            rx_data.extend(await tb.sink.read())
+        await tb.source.write_cmd(data)
 
-        tb.log.info("Read data: %s", rx_data)
+        await tb.source.write_data(data)
 
-        assert tb.sink.empty()
+        rx_data = await tb.sink.read_cmd()
+
+        assert data == rx_data, "RECEIVED DATA DOES NOT MATCH"
+
+        rx_data = await tb.sink.read_data()
+
+        assert data == rx_data, "RECEIVED DATA DOES NOT MATCH"
 
         await Timer(100, 'us')
 
 
-def prbs31(state=0x7fffffff):
-    while True:
-        for i in range(8):
-            if bool(state & 0x08000000) ^ bool(state & 0x40000000):
-                state = ((state & 0x3fffffff) << 1) | 1
-            else:
-                state = (state & 0x3fffffff) << 1
-        yield state & 0xff
+def incrementing_payload():
+    return list(range(2**16))
 
-
-def size_list():
-    return list(range(1, 16)) + [128]
-
-
-def incrementing_payload(length):
-    return bytearray(itertools.islice(itertools.cycle(range(256)), length))
-
-
-def prbs_payload(length):
-    gen = prbs31()
-    return bytearray([next(gen) for x in range(length)])
+def random_payload():
+    return random.sample(range(2**16), 2**16)
 
 
 if cocotb.SIM_NAME:
 
     factory = TestFactory(run_test)
-    factory.add_option("payload_lengths", [size_list])
-    factory.add_option("payload_data", [incrementing_payload, prbs_payload])
+    factory.add_option("payload_data", [incrementing_payload, random_payload])
     factory.generate_tests()
 
 
@@ -105,8 +97,8 @@ if cocotb.SIM_NAME:
 tests_dir = os.path.dirname(__file__)
 
 
-def test_uart(request):
-    dut = "test_uart"
+def test_mil_std_1553(request):
+    dut = "test_mil_std_1553"
     module = os.path.splitext(os.path.basename(__file__))[0]
     toplevel = dut
 

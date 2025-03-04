@@ -1,4 +1,4 @@
-"""
+/*
 
 Copyright (c) 2020 Alex Forencich
 
@@ -20,8 +20,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-"""
+*/
 
-from .version import __version__
+// Language: Verilog 2001
 
-from .uart import UartSource, UartSink
+`timescale 1ns / 1ns
+
+/*
+ * mil_std_1553 DUT
+ */
+module test_mil_std_1553
+(
+    inout  [1:0] data
+);
+
+  //copy pasta, fst generation
+  initial
+  begin
+    $dumpfile("test_mil_std_1553.fst");
+    $dumpvars(0,test_mil_std_1553);
+  end
+
+endmodule

@@ -26,7 +26,7 @@ WAVES ?= 0
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ns
 
-DUT      = test_uart
+DUT      = test_mil_std_1553
 TOPLEVEL = $(DUT)
 MODULE   = $(DUT)
 VERILOG_SOURCES += $(DUT).v

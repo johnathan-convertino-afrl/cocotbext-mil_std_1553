@@ -53,9 +53,6 @@ To receive data with a `UartSink`, call `read()` or `read_nowait()`.  Optionally
 #### Constructor parameters:
 
 * _data_: data signal
-* _baud_: baud rate in bits per second (optional, default 9600)
-* _bits_: bits per byte (optional, default 8)
-* _stop_bits_: length of stop bit in bit times (optional, default 1)
 
 #### Attributes:
 
