@@ -148,23 +148,23 @@ class MILSTD1553Source:
         return False
 
     async def _cmd_sync(self, data):
-        data.value = 1
+        data.value = 2
         await self._base_delay
         await self._base_delay
         await self._base_delay
 
-        data.value = 2
+        data.value = 1
         await self._base_delay
         await self._base_delay
         await self._base_delay
 
     async def _data_sync(self, data):
-        data.value = 2
+        data.value = 1
         await self._base_delay
         await self._base_delay
         await self._base_delay
 
-        data.value = 1
+        data.value = 2
         await self._base_delay
         await self._base_delay
         await self._base_delay
@@ -186,7 +186,7 @@ class MILSTD1553Source:
 
             parity = 1
 
-            encode_out_data = encode(out_data)
+            encode_out_data = encode(out_data[::-1])
 
             for byte in out_data:
                 for x in range(8):
@@ -200,14 +200,14 @@ class MILSTD1553Source:
 
             # data bits
             for byte in encode_out_data:
-                for x in range(8):
+                for x in reversed(range(8)):
                     bit = ((byte >> x) & 1)
-                    data.value = bit | ((~bit & 1) << 1)
+                    data.value = (bit << 1) | (~bit & 1)
                     await self._base_delay
 
-            data.value = parity | ((~parity & 1) << 1)
-            await self._base_delay
             data.value = (~parity & 1) | ((parity & 1) << 1)
+            await self._base_delay
+            data.value = parity | ((~parity & 1) << 1)
             await self._base_delay
             data.value = 0
 
@@ -240,10 +240,10 @@ class MILSTD1553Sink:
         self._base_delay_half = Timer(1e3/4, 'ns')
 
         #command sync array value
-        self._cmd_sync = [BinaryValue("01"), BinaryValue("10")]
+        self._cmd_sync = [BinaryValue("10"), BinaryValue("01")]
 
         #data sync array value
-        self._data_sync = [BinaryValue("10"), BinaryValue("01")]
+        self._data_sync = [BinaryValue("01"), BinaryValue("10")]
 
         self._run_cr = None
         self._restart()
@@ -350,11 +350,11 @@ class MILSTD1553Sink:
             await self._base_delay_half
 
             for i in range(len(decode_in_data)):
-                for x in range(8):
-                    decode_in_data[i] |= ((data.value.integer & 1) << x)
+                for x in reversed(range(8)):
+                    decode_in_data[i] |= ((~data.value.integer & 1) << x)
                     await self._base_delay
 
-            parity = data.value.integer & 1
+            parity = ~data.value.integer & 1
 
             org_parity = parity
 
@@ -362,7 +362,7 @@ class MILSTD1553Sink:
 
             await self._base_delay
 
-            in_data = decode(decode_in_data)
+            in_data = decode(decode_in_data)[::-1]
 
             for byte in in_data:
                 for x in range(8):

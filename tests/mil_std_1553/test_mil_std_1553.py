@@ -69,13 +69,13 @@ async def run_test(dut, payload_data=None):
 
         rx_data = await tb.sink.read_cmd()
 
-        assert data == rx_data, "RECEIVED DATA DOES NOT MATCH"
+        assert data == rx_data, "RECEIVED CMD DOES NOT MATCH"
 
         rx_data = await tb.sink.read_data()
 
         assert data == rx_data, "RECEIVED DATA DOES NOT MATCH"
 
-        await Timer(100, 'us')
+        await Timer(10, 'us')
 
 
 def incrementing_payload():
