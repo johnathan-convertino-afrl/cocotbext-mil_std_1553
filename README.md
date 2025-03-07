@@ -27,7 +27,7 @@
   For detailed usage information, please navigate to one of the following sources. They are the same, just in a different format.
 
   - [cocotbext_mil-std-1553.pdf](docs/manual/cocotbext_mil-std-1553.pdf)
-  - [github page](https://johnathan-convertino-afrl.github.io/cocotbext_mil-std-1553/)
+  - [github page](https://johnathan-convertino-afrl.github.io/cocotbext-mil_std_1553/)
 
 ### DEPENDENCIES
 #### Build
