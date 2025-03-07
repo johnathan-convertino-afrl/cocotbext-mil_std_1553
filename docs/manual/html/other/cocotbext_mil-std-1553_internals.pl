@@ -3,7 +3,7 @@
 
 
 $key = q/Code_Documentation/;
-$ref_files{$key} = "$dir".q|cocotbext_mil-std-1553_node12.html|; 
+$ref_files{$key} = "$dir".q|cocotbext_mil-std-1553_node10.html|; 
 $noresave{$key} = "$nosave";
 
 1;

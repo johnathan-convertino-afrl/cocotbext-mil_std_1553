@@ -11,7 +11,7 @@
 
 <LINK REL="STYLESHEET" HREF="html.css">
 
-<LINK REL="next" HREF="cocotbext_mil-std-1553_node7.html">
+<LINK REL="next" HREF="cocotbext_mil-std-1553_node8.html">
 <LINK REL="previous" HREF="cocotbext_mil-std-1553_node2.html">
 <LINK REL="next" HREF="cocotbext_mil-std-1553_node7.html">
 </HEAD>
@@ -28,17 +28,17 @@
 <A
  HREF="cocotbext_mil-std-1553_node5.html">
 <IMG WIDTH="63" HEIGHT="24" ALT="previous" SRC="prev.png"></A> 
-<A ID="tex2html46"
+<A ID="tex2html42"
   HREF="cocotbext_mil-std-1553_node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALT="contents" SRC="contents.png"></A>  
 <BR>
 <B> Next:</B> <A
- HREF="cocotbext_mil-std-1553_node7.html">Building</A>
+ HREF="cocotbext_mil-std-1553_node7.html">Directory Guide</A>
 <B> Up:</B> <A
  HREF="html.html">html</A>
 <B> Previous:</B> <A
- HREF="cocotbext_mil-std-1553_node5.html">In a Project</A>
- &nbsp; <B>  <A ID="tex2html47"
+ HREF="cocotbext_mil-std-1553_node5.html">In a Simulation</A>
+ &nbsp; <B>  <A ID="tex2html43"
   HREF="cocotbext_mil-std-1553_node1.html">Contents</A></B> 
 <BR>
 <BR></DIV>
@@ -49,17 +49,28 @@ Architecture</A>
 </H1>
 
 <P>
-This AXIS FIFO is made for two modules. They are the FIFO, and AXIS FIFO control. The combination of these two provide the AXIS FIFO module.
-Having it made this way allows for future modules to be customized and brought in to change the FIFO's behavior. The current modules emulate the Xilinx
-AXIS FIFO IP core availble in Vivado 2018 and up.
+Please see <A HREF="cocotbext_mil-std-1553_node10.html#Code_Documentation"><IMG  ALT="[*]" SRC="crossref.png"></A> for more information.
 
 <P>
-AXIS FIFO control is the heart of the core when it comes to how it responds. The logic in the core is designed to emulate the Xilinx AXIS FIFO IP.
+MILSTD1553Source tests mil-std-1553 receive devices. This is uses the machester encoder library in python, then this is bit banged out using timers.
+The sync is sent based upon which write command is used. write_cmd will write the data and use a command sync out. write_data will write the data and
+use a data sync out.
 
 <P>
-Please see <A HREF="cocotbext_mil-std-1553_node12.html#Code_Documentation"><IMG  ALT="[*]" SRC="crossref.png"></A> for more information.
+MILSTD1553Sink tests mil-std-1553 transmit devices. This is uses the machester decoder library in python, then this is bit banged in using timers. Once a
+sync is identified the data is put in one of two queues. The data queue contains data that came from a message that started with a data sync. The command
+queue contains data that came from a message that started with a command/status sync.
 
 <P>
+<BR><HR>
+<!--Table of Child-Links-->
+<A ID="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+
+<UL CLASS="ChildLinks">
+<LI><A ID="tex2html44"
+  HREF="cocotbext_mil-std-1553_node7.html">Directory Guide</A>
+</UL>
+<!--End of Table of Child-Links-->
 <BR><HR>
 
 </BODY>

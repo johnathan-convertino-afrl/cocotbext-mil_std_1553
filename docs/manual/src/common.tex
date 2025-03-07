@@ -1,7 +1,7 @@
 \begin{titlepage}
   \begin{center}
 
-  {\Huge COCOTBEXT\_mil-std-1553}
+  {\Huge cocotbext mil-std-1553}
 
   \vspace{25mm}
 
@@ -27,9 +27,7 @@
 \subsection{Introduction}
 
 \par
-Standard AXIS FIFO with multiple options. The FIFO uses a AXIS interface for data in and out.
-It also emulates the Xilinx AXIS FIFO bugs and all. This is NOT dependent on Xilinx FPGA's and
-can be used on any FPGA supporting the Verilog block ram style primitive.
+Cocotb extension to test mil-std-1553 transmit and receive.
 
 \subsection{Dependencies}
 
@@ -39,29 +37,42 @@ The following are the dependencies of the cores.
 \begin{itemize}
   \item iverilog (simulation)
   \item cocotb (simulation)
+  \item machester (python)
 \end{itemize}
 
-\subsection{In a Project}
+\subsection{In a Simulation}
 \par
-Simply use this core between a sink and source devices. This buffer data from one bus to another. Check the code to see if others will work correctly.
+Below is a simple example for reading and writing data over mil-std-1553 in the cocotb extension.
+\begin{lstlisting}[language=Python]
+source  = MILSTD1553Source(dut.data)
+
+sink = MILSTD1553Sink(dut.data)
+
+test_data = 128
+
+data = test_data.to_bytes(2, byteorder="little")
+
+await source.write_cmd(data)
+
+await source.write_data(data)
+
+rx_data = await sink.read_cmd()
+
+rx_data = await sink.read_data()
+\end{lstlisting}
 
 \section{Architecture}
 
-\par
-This AXIS FIFO is made for two modules. They are the FIFO, and AXIS FIFO control. The combination of these two provide the AXIS FIFO module.
-Having it made this way allows for future modules to be customized and brought in to change the FIFO's behavior. The current modules emulate the Xilinx
-AXIS FIFO IP core availble in Vivado 2018 and up.
-
-\par
-AXIS FIFO control is the heart of the core when it comes to how it responds. The logic in the core is designed to emulate the Xilinx AXIS FIFO IP.
-
 Please see \ref{Code Documentation} for more information.
 
-\section{Building}
-
 \par
-The AXIS FIFO core is written in Verilog 2001. They should synthesize in any modern FPGA software. The core comes as a fusesoc packaged core and can be
-included in any other core. Be sure to make sure you have meet the dependencies listed in the previous section.
+MILSTD1553Source tests mil-std-1553 receive devices. This is uses the machester encoder library in python, then this is bit banged out using timers.
+The sync is sent based upon which write command is used. write\_cmd will write the data and use a command sync out. write\_data will write the data and
+use a data sync out.
+\par
+MILSTD1553Sink tests mil-std-1553 transmit devices. This is uses the machester decoder library in python, then this is bit banged in using timers. Once a
+sync is identified the data is put in one of two queues. The data queue contains data that came from a message that started with a data sync. The command
+queue contains data that came from a message that started with a command/status sync.
 
 \subsection{Directory Guide}
 
@@ -73,42 +84,30 @@ Below highlights important folders from the root of the directory.
     \begin{itemize}
       \item \textbf{manual} Contains user manual and github page that are generated from the latex sources.
     \end{itemize}
-  \item \textbf{src} Contains source files for the core
-  \item \textbf{tb} Contains test bench files for iverilog and cocotb
+  \item \textbf{cocotbext} Contains source files for the extension
+  \item \textbf{tests} Contains test files for cocotb
 \end{enumerate}
 
 \newpage
 
 \section{Simulation}
 \par
-There are a few different simulations that can be run for this core. All currently use iVerilog (icarus) to run. The first is iverilog, which
-uses verilog only for the simulations. The other is cocotb. This does a unit test approach to the testing and gives a list of tests that pass
-or fail.
-
-\subsection{iverilog}
-\par
-All simulation targets that do NOT have cocotb in the name use a verilog test bench with verilog stimulus components. These all read in a file
-and then write a file that has been processed by the FIFO. Then the input and output file are compared with a MD5 sum to check that they
-match. If they do not match then the test has failed. All of these tests provide fst output files for viewing the waveform in the there
-target build folder.
+A simulation for testing the cores can be run to verify operation.
 
 \subsection{cocotb}
 \par
 To use the cocotb tests you must install the following python libraries.
 \begin{lstlisting}[language=bash]
   $ pip install cocotb
-  $ pip install cocotbext-axi
+  $ pip install -e .
 \end{lstlisting}
 
-Then you must use the cocotb sim target. In this case it is sim\_cocotb. This target can be run with various bus and fifo parameters.
+Then you must enter the tests folder and enter the mil-std-1553 folder. From there you may execute the following command
+which will kick off the test.
 \begin{lstlisting}[language=bash]
-  $ fusesoc run --target sim_cocotb AFRL:buffer:axis_fifo:1.0.0 --BUS_WIDTH=8 --FIFO_DEPTH=32
+  $ make
 \end{lstlisting}
 
-The following is an example command to run through various parameters without typing them one by one.
-\begin{lstlisting}[language=bash]
-  $ for i in {1..32}; do sleep 5; export RY=$(($RANDOM%32+1)); fusesoc run --target sim_cocotb AFRL:buffer:axis_fifo:1.0.0 --BUS_WIDTH=$i --FIFO_DEPTH=$RY; echo "BUS WIDTH:" $i "FIFO DEPTH:" $RY; done
-\end{lstlisting}
 \newpage
 
 \section{Code Documentation} \label{Code Documentation}
@@ -117,10 +116,9 @@ The following is an example command to run through various parameters without ty
 Natural docs is used to generate documentation for this project. The next lists the following sections.
 
 \begin{itemize}
-\item \textbf{AXIS\_FIFO} will buffer data from input to output.\\
-\item \textbf{AXIS\_FIFO\_CONTROL} emulates the Xilinx FIFO IP interface and its behavior.\\
-\item \textbf{tb\_axis} Verilog test bench.\\
-\item \textbf{tb\_cocotb verilog} Verilog test bench base for cocotb.\\
-\item \textbf{tb\_cocotb python} cocotb unit test functions.\\
+\item \textbf{init} python init code\\
+\item \textbf{mil-std-1553} cocotb extension library.\\
+\item \textbf{test mil-std-1553 verilog} Verilog test bench for cocotb.\\
+\item \textbf{test mil-std-1553 python} cocotb unit test functions.\\
 \end{itemize}
 

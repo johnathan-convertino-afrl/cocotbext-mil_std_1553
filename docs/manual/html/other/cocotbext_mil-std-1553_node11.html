@@ -3,7 +3,7 @@
 <!--Converted with LaTeX2HTML 2024 (Released January 1, 2024) -->
 <HTML lang="en">
 <HEAD>
-<TITLE>cocotb</TITLE>
+<TITLE>init info</TITLE>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
@@ -11,6 +11,7 @@
 
 <LINK REL="STYLESHEET" HREF="html.css">
 
+<LINK REL="next" HREF="cocotbext_mil-std-1553_node12.html">
 <LINK REL="previous" HREF="cocotbext_mil-std-1553_node10.html">
 <LINK REL="next" HREF="cocotbext_mil-std-1553_node12.html">
 </HEAD>
@@ -22,58 +23,32 @@
  HREF="cocotbext_mil-std-1553_node12.html">
 <IMG WIDTH="37" HEIGHT="24" ALT="next" SRC="next.png"></A> 
 <A
- HREF="cocotbext_mil-std-1553_node9.html">
+ HREF="cocotbext_mil-std-1553_node10.html">
 <IMG WIDTH="26" HEIGHT="24" ALT="up" SRC="up.png"></A> 
 <A
  HREF="cocotbext_mil-std-1553_node10.html">
 <IMG WIDTH="63" HEIGHT="24" ALT="previous" SRC="prev.png"></A> 
-<A ID="tex2html59"
+<A ID="tex2html58"
   HREF="cocotbext_mil-std-1553_node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALT="contents" SRC="contents.png"></A>  
 <BR>
 <B> Next:</B> <A
- HREF="cocotbext_mil-std-1553_node12.html">Code Documentation</A>
+ HREF="cocotbext_mil-std-1553_node12.html">main 1553 cocotb extension</A>
 <B> Up:</B> <A
- HREF="cocotbext_mil-std-1553_node9.html">Simulation</A>
+ HREF="cocotbext_mil-std-1553_node10.html">Code Documentation</A>
 <B> Previous:</B> <A
- HREF="cocotbext_mil-std-1553_node10.html">iverilog</A>
- &nbsp; <B>  <A ID="tex2html60"
+ HREF="cocotbext_mil-std-1553_node10.html">Code Documentation</A>
+ &nbsp; <B>  <A ID="tex2html59"
   HREF="cocotbext_mil-std-1553_node1.html">Contents</A></B> 
 <BR>
 <BR></DIV>
 <!--End of Navigation Panel-->
 
-<H2><A ID="SECTION00052000000000000000">
-cocotb</A>
+<H2><A ID="SECTION00051000000000000000"></A>
+<BR>
+<a href="../files/__init__-py.html">init info</a>
 </H2>
-
-<P>
-To use the cocotb tests you must install the following python libraries.
-<TABLE FRAME="VOID" CELLPADDING="4"><TR><TD>
-<PRE>
-  $ pip install cocotb
-  $ pip install cocotbext-axi
-</PRE>
-</TD></TR></TABLE>
-
-<P>
-Then you must use the cocotb sim target. In this case it is sim_cocotb. This target can be run with various bus and fifo parameters.
-<TABLE FRAME="VOID" CELLPADDING="4"><TR><TD>
-<PRE>
-  $ fusesoc run --target sim_cocotb AFRL:buffer:axis_fifo:1.0.0 --BUS_WIDTH=8 --FIFO_DEPTH=32
-</PRE>
-</TD></TR></TABLE>
-
-<P>
-The following is an example command to run through various parameters without typing them one by one.
-<TABLE FRAME="VOID" CELLPADDING="4"><TR><TD>
-<PRE>
-  $ for i in {1..32}; do sleep 5; export RY=$(($RANDOM%32+1)); fusesoc run --target sim_cocotb AFRL:buffer:axis_fifo:1.0.0 --BUS_WIDTH=$i --FIFO_DEPTH=$RY; echo "BUS WIDTH:" $i "FIFO DEPTH:" $RY; done
-
-</PRE>
-</TD></TR></TABLE>
-<P>
-<BR><HR>
+  <BR><HR>
 
 </BODY>
 </HTML>

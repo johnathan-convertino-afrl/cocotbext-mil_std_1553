@@ -3,7 +3,7 @@
 <!--Converted with LaTeX2HTML 2024 (Released January 1, 2024) -->
 <HTML lang="en">
 <HEAD>
-<TITLE>In a Project</TITLE>
+<TITLE>In a Simulation</TITLE>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
@@ -27,7 +27,7 @@
 <A
  HREF="cocotbext_mil-std-1553_node4.html">
 <IMG WIDTH="63" HEIGHT="24" ALT="previous" SRC="prev.png"></A> 
-<A ID="tex2html44"
+<A ID="tex2html40"
   HREF="cocotbext_mil-std-1553_node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALT="contents" SRC="contents.png"></A>  
 <BR>
@@ -37,18 +37,37 @@
  HREF="cocotbext_mil-std-1553_node2.html">Usage</A>
 <B> Previous:</B> <A
  HREF="cocotbext_mil-std-1553_node4.html">Dependencies</A>
- &nbsp; <B>  <A ID="tex2html45"
+ &nbsp; <B>  <A ID="tex2html41"
   HREF="cocotbext_mil-std-1553_node1.html">Contents</A></B> 
 <BR>
 <BR></DIV>
 <!--End of Navigation Panel-->
 
 <H2><A ID="SECTION00023000000000000000">
-In a Project</A>
+In a Simulation</A>
 </H2>
 
 <P>
-Simply use this core between a sink and source devices. This buffer data from one bus to another. Check the code to see if others will work correctly.
+Below is a simple example for reading and writing data over mil-std-1553 in the cocotb extension.
+<TABLE FRAME="VOID" CELLPADDING="4"><TR><TD>
+<PRE>
+source  = MILSTD1553Source(dut.data)
+
+sink = MILSTD1553Sink(dut.data)
+
+test_data = 128
+
+data = test_data.to_bytes(2, byteorder="little")
+
+await source.write_cmd(data)
+
+await source.write_data(data)
+
+rx_data = await sink.read_cmd()
+
+rx_data = await sink.read_data()
+</PRE>
+</TD></TR></TABLE>
 
 <P>
 <BR><HR>

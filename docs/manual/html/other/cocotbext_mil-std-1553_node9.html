@@ -3,7 +3,7 @@
 <!--Converted with LaTeX2HTML 2024 (Released January 1, 2024) -->
 <HTML lang="en">
 <HEAD>
-<TITLE>Simulation</TITLE>
+<TITLE>cocotb</TITLE>
 
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <META NAME="viewport" CONTENT="width=device-width, initial-scale=1.0">
@@ -11,8 +11,7 @@
 
 <LINK REL="STYLESHEET" HREF="html.css">
 
-<LINK REL="next" HREF="cocotbext_mil-std-1553_node12.html">
-<LINK REL="previous" HREF="cocotbext_mil-std-1553_node7.html">
+<LINK REL="previous" HREF="cocotbext_mil-std-1553_node8.html">
 <LINK REL="next" HREF="cocotbext_mil-std-1553_node10.html">
 </HEAD>
 
@@ -23,48 +22,51 @@
  HREF="cocotbext_mil-std-1553_node10.html">
 <IMG WIDTH="37" HEIGHT="24" ALT="next" SRC="next.png"></A> 
 <A
- HREF="html.html">
+ HREF="cocotbext_mil-std-1553_node8.html">
 <IMG WIDTH="26" HEIGHT="24" ALT="up" SRC="up.png"></A> 
 <A
  HREF="cocotbext_mil-std-1553_node8.html">
 <IMG WIDTH="63" HEIGHT="24" ALT="previous" SRC="prev.png"></A> 
-<A ID="tex2html53"
+<A ID="tex2html50"
   HREF="cocotbext_mil-std-1553_node1.html">
 <IMG WIDTH="65" HEIGHT="24" ALT="contents" SRC="contents.png"></A>  
 <BR>
 <B> Next:</B> <A
- HREF="cocotbext_mil-std-1553_node10.html">iverilog</A>
+ HREF="cocotbext_mil-std-1553_node10.html">Code Documentation</A>
 <B> Up:</B> <A
- HREF="html.html">html</A>
+ HREF="cocotbext_mil-std-1553_node8.html">Simulation</A>
 <B> Previous:</B> <A
- HREF="cocotbext_mil-std-1553_node8.html">Directory Guide</A>
- &nbsp; <B>  <A ID="tex2html54"
+ HREF="cocotbext_mil-std-1553_node8.html">Simulation</A>
+ &nbsp; <B>  <A ID="tex2html51"
   HREF="cocotbext_mil-std-1553_node1.html">Contents</A></B> 
 <BR>
 <BR></DIV>
 <!--End of Navigation Panel-->
 
-<H1><A ID="SECTION00050000000000000000">
-Simulation</A>
-</H1>
+<H2><A ID="SECTION00041000000000000000">
+cocotb</A>
+</H2>
 
 <P>
-There are a few different simulations that can be run for this core. All currently use iVerilog (icarus) to run. The first is iverilog, which
-uses verilog only for the simulations. The other is cocotb. This does a unit test approach to the testing and gives a list of tests that pass
-or fail.
+To use the cocotb tests you must install the following python libraries.
+<TABLE FRAME="VOID" CELLPADDING="4"><TR><TD>
+<PRE>
+  $ pip install cocotb
+  $ pip install -e .
+</PRE>
+</TD></TR></TABLE>
 
 <P>
-<BR><HR>
-<!--Table of Child-Links-->
-<A ID="CHILD_LINKS"><STRONG>Subsections</STRONG></A>
+Then you must enter the tests folder and enter the mil-std-1553 folder. From there you may execute the following command
+which will kick off the test.
+<TABLE FRAME="VOID" CELLPADDING="4"><TR><TD>
+<PRE>
+  $ make
+</PRE>
+</TD></TR></TABLE>
 
-<UL CLASS="ChildLinks">
-<LI><A ID="tex2html55"
-  HREF="cocotbext_mil-std-1553_node10.html">iverilog</A>
-<LI><A ID="tex2html56"
-  HREF="cocotbext_mil-std-1553_node11.html">cocotb</A>
-</UL>
-<!--End of Table of Child-Links-->
+<P>
+<P>
 <BR><HR>
 
 </BODY>

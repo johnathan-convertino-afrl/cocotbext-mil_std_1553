@@ -1,16 +1,14 @@
 # Cocotbext for mil-std-1553
 ### cocotb extension for mil-std-1553 communications
 
-
 ![image](docs/manual/img/AFRL.png)
-
 
 ---
 
    author: Jay Convertino   
    original: Alex Forencich __
    
-   date: 2024.12.16
+   date: 2025.03.07
    
    details:
    
@@ -28,18 +26,23 @@
 ### DOCUMENTATION
   For detailed usage information, please navigate to one of the following sources. They are the same, just in a different format.
 
-  - TODO
+  - [cocotbext_mil-std-1553.pdf](docs/manual/cocotbext_mil-std-1553.pdf)
+  - [github page](https://johnathan-convertino-afrl.github.io/cocotbext_mil-std-1553/)
 
 ### DEPENDENCIES
 #### Build
-  - TODO
+  - machester (python)
+  - cocotb (python)
 
 ### COMPONENTS
 #### SRC
 
-* TODO
+* __init__.py
+* mil-std-1553.py
+* verion.py
   
 #### TB
 
-* TODO
+* test_mil-std-1553.py
+* test_mil-std-1553.v
 

@@ -3,7 +3,7 @@
 
 
 $key = q/Code_Documentation/;
-$external_labels{$key} = "$URL/" . q|cocotbext_mil-std-1553_node12.html|; 
+$external_labels{$key} = "$URL/" . q|cocotbext_mil-std-1553_node10.html|; 
 $noresave{$key} = "$nosave";
 
 1;
