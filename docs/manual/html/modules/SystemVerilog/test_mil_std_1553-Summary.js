@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("SystemVerilogModule:test_mil_std_1553","test_mil_std_1553");NDSummary.OnSummaryLoaded("SystemVerilogModule:test_mil_std_1553",[["SystemVerilog","SystemVerilog"]],[["Modules","Module"]],[[80,0,0,"test_mil_std_1553"]]);

@@ -1,27 +1,59 @@
 #!/usr/bin/env python
-"""
-
-Copyright (c) 2020 Alex Forencich
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-"""
+#******************************************************************************
+# file:    test_mil_std_1553.py
+#
+# author:  JAY CONVERTINO
+#
+# date:    2025/03/06
+#
+# about:   Brief
+# Cocotb test bench for mil-std-1553 source/sink
+#
+# license: License MIT
+# Copyright 2025 Jay Convertino
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+#
+#******************************************************************************
+# """
+#
+# Copyright (c) 2020 Alex Forencich
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+# """
 
 import itertools
 import logging
@@ -39,7 +71,8 @@ sys.path.append("../../")
 
 from cocotbext.mil_std_1553 import MILSTD1553Source, MILSTD1553Sink
 
-
+# Class: TB
+# Create the device under test which is the source/sink.
 class TB:
     def __init__(self, dut):
         self.dut = dut
@@ -51,6 +84,8 @@ class TB:
         self.sink = MILSTD1553Sink(dut.data)
 
 
+# Function: run_test
+# Tests the source/sink for valid transmission of data.
 async def run_test(dut, payload_data=None):
 
     tb = TB(dut)
@@ -77,14 +112,18 @@ async def run_test(dut, payload_data=None):
 
         await Timer(10, 'us')
 
-
+# Function: incrementing_payload
+# Generate a list of ints that increment from 0 to 2^16
 def incrementing_payload():
     return list(range(2**16))
 
+# Function: random_payload
+# Generate a list of random ints 2^16 in the range of 0 to 2^16
 def random_payload():
     return random.sample(range(2**16), 2**16)
 
 
+# If its a sim... create the test factory with these options.
 if cocotb.SIM_NAME:
 
     factory = TestFactory(run_test)
@@ -93,10 +132,10 @@ if cocotb.SIM_NAME:
 
 
 # cocotb-test
-
 tests_dir = os.path.dirname(__file__)
 
-
+# Function: test_mil_std_1553
+# Main cocotb function that specifies how to put the test together.
 def test_mil_std_1553(request):
     dut = "test_mil_std_1553"
     module = os.path.splitext(os.path.basename(__file__))[0]

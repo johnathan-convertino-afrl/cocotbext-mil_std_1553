@@ -1,13 +1,12 @@
 #******************************************************************************
-# file:    milstd1553.py
+# file:    __init__.py
 #
 # author:  JAY CONVERTINO
 #
-# date:    2025/01/28
+# date:    2025/03/06
 #
 # about:   Brief
-# MIL-STD-1553 cocotb
-#
+# MIL-STD-1553 define for packages
 # license: License MIT
 # Copyright 2025 Jay Convertino
 #

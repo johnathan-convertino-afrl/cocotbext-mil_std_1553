@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("_cm",["Variable","Function"],[["_cmd_sync",,[["MILSTD1553Sink",,,,0,"File:mil_std_1553.py:MILSTD1553Sink._cmd_sync","PythonClass:MILSTD1553Sink:_cmd_sync"],["MILSTD1553Source",,,,1,"File:mil_std_1553.py:MILSTD1553Source._cmd_sync","PythonClass:MILSTD1553Source:_cmd_sync"]]]]);

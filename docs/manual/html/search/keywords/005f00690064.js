@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("_id",["Variable"],[["_idle",,[["MILSTD1553Source.self",,,,0,"File:mil_std_1553.py:MILSTD1553Source.self._idle","PythonClass:MILSTD1553Source:self._idle"]]]]);

@@ -1,9 +1,9 @@
 #******************************************************************************
-# file:    milstd1553.py
+# file:    mil_std_1553.py
 #
 # author:  JAY CONVERTINO
 #
-# date:    2025/01/28
+# date:    2025/03/06
 #
 # about:   Brief
 # MIL-STD-1553 cocotb
@@ -65,10 +65,15 @@ from manchester_code import encode, decode, decode_bits
 
 from .version import __version__
 
-
+# Class: MILSTD1553Source
+# A mil-std-1553 transmit test routine.
 class MILSTD1553Source:
+    # Constructor: __init__
+    # Initialize the object
     def __init__(self, data, *args, **kwargs):
         self.log = logging.getLogger(f"cocotb.{data._path}")
+        # Variable: self._data
+        # Set internal data connection to 1553 differential bus
         self._data = data
 
         self.log.info("MIL-STD-1553 source")
@@ -81,61 +86,86 @@ class MILSTD1553Source:
         self.active = False
         self.queue = Queue()
 
-        # 1 MHz is 1000 nano seconds
-        # need half that due to manchester encoding method
+        # Variable: self._base_delay
+        # 1 MHz is 1000 nano seconds need half that due to manchester encoding method
         self._base_delay = Timer(1e3/2, 'ns')
 
+        # Variable: self._idle
+        # Event trigger for cocotb
         self._idle = Event()
         self._idle.set()
 
+        # Variable: self._data
+        # Event trigger for cocotb
         self._data.setimmediatevalue(0)
 
+        # Variable: self._run_cr
+        # Thread instance of _run method
         self._run_cr = None
         self._restart()
 
+    # Function: _restart
+    # kill and restart _run thread.
     def _restart(self):
         if self._run_cr is not None:
             self._run_cr.kill()
         self._run_cr = cocotb.start_soon(self._run(self._data))
 
-    # need a write_cmd... and a write_data
+    # Function: write_cmd
+    # Write data to send that uses the command sync
     async def write_cmd(self, data):
         if(self._check_type(data)):
             self.queue.put_nowait(self._cmd_sync)
             await self.queue.put(data)
             self._idle.clear()
 
+    # Function: write_data
+    # Write data to send that uses the data sync
     async def write_data(self, data):
         if(self._check_type(data)):
             self.queue.put_nowait(self._data_sync)
             await self.queue.put(data)
             self._idle.clear()
 
+    # Function: write_nowait_cmd
+    # Write data to send that uses command sync but do not wait after writting.
     def write_nowait_cmd(self, data):
         if(self._check_type(data)):
             self.queue.put_nowait(self._cmd_sync)
             self.queue.put_nowait(data)
             self._idle.clear()
 
+    # Function: write_nowait_data
+    # Write data to send that uses data sync but do not wait after writting.
     def write_nowait_data(self, data):
         if(self._check_type(data)):
             self.queue.put_nowait(self._data_sync)
             self.queue.put_nowait(data)
             self._idle.clear()
 
+    # Function: count
+    # How many items in the queue
     def count(self):
         return self.queue.qsize()
 
+    # Function: empty
+    # Is the quene empty?
     def empty(self):
         return self.queue.empty()
 
+    # Function: idle
+    # Is the queue empty and the _run is not active processing data.
     def idle(self):
         return self.empty() and not self.active
 
+    # Function: clear
+    # Remove all items from queue
     def clear(self):
         while not self.queue.empty():
             frame = self.queue.get_nowait()
 
+    # Function: _check_type
+    # Check and make sure we are only sending 2 bytes at a time and that it is a bytes/bytearray
     def _check_type(self, data):
         if isinstance(data, (bytes, bytearray)):
             if(len(data) == 2):
@@ -147,6 +177,8 @@ class MILSTD1553Source:
 
         return False
 
+    # Function: _cmd_sync
+    # Generate a command sync on the diff output
     async def _cmd_sync(self, data):
         data.value = 2
         await self._base_delay
@@ -158,6 +190,8 @@ class MILSTD1553Source:
         await self._base_delay
         await self._base_delay
 
+    # Function: _data_sync
+    # Generate a data sync on the diff output
     async def _data_sync(self, data):
         data.value = 1
         await self._base_delay
@@ -169,9 +203,13 @@ class MILSTD1553Source:
         await self._base_delay
         await self._base_delay
 
+    # Function: wait
+    # Wait for the run thread to become idle.
     async def wait(self):
         await self._idle.wait()
 
+    # Function: _run
+    # Thread that processing queue and outputs data in mil-std-1553 format.
     async def _run(self, data):
         self.active = False
 
@@ -213,10 +251,16 @@ class MILSTD1553Source:
 
             self.active = False
 
+# Class: MILSTD1553Sink
+# A mil-std-1553 transmit test routine.
 class MILSTD1553Sink:
 
+    # Constructor: __init__
+    # Initialize the object
     def __init__(self, data, *args, **kwargs):
         self.log = logging.getLogger(f"cocotb.{data._path}")
+        # Variable: self._data
+        # Set internal data connection to 1553 differential bus
         self._data = data
 
         self.log.info("MIL-STD-1553 sink")
@@ -231,71 +275,101 @@ class MILSTD1553Sink:
         self.data_queue = Queue()
         self.sync = Event()
 
-        # 1 MHz is 1000 nano seconds
-        # need half that due to manchester encoding method
+        # Variable: self._base_delay
+        # 1 MHz is 1000 nano seconds need half that due to manchester decoding method
         self._base_delay = Timer(1e3/2, 'ns')
 
-        # 1 MHz is 1000 nano seconds
-        # need half of half that due to manchester encoding method
+        # Variable: self._base_delay
+        # 1 MHz is 1000 nano seconds need half of half that due to manchester decoding method
         self._base_delay_half = Timer(1e3/4, 'ns')
 
-        #command sync array value
+        # Variable: _cmd_sync
+        # command sync array value
         self._cmd_sync = [BinaryValue("10"), BinaryValue("01")]
 
-        #data sync array value
+        # Variable: _data_sync
+        # data sync array value
         self._data_sync = [BinaryValue("01"), BinaryValue("10")]
 
+        # Variable: self._run_cr
+        # Thread instance of _run method
         self._run_cr = None
         self._restart()
 
+    # Function: _restart
+    # Kill and restart run function
     def _restart(self):
         if self._run_cr is not None:
             self._run_cr.kill()
         self._run_cr = cocotb.start_soon(self._run(self._data))
 
+    # Function: read_cmd
+    # Read any data that was identified with a command sync
     async def read_cmd(self):
         while self.empty_cmd():
             self.sync.clear()
             await self.sync.wait()
         return self.read_nowait_cmd()
 
+    # Function: read_nowait_cmd
+    # Read any data that was identified with a command sync, and do not wait for data to become available.
     def read_nowait_cmd(self):
         data = self.cmd_queue.get_nowait()
         return data
 
+    # Function: read_data
+    # Read any data that was identified with a data sync.
     async def read_data(self):
         while self.empty_data():
             self.sync.clear()
             await self.sync.wait()
         return self.read_nowait_data()
 
+    # Function: read_nowait_data
+    # Read any data that was identified with a data sync, and do not wait for data to become available.
     def read_nowait_data(self):
         data = self.data_queue.get_nowait()
         return data
 
+    # Function: count_cmd
+    # How many elements are in the command queue?
     def count_cmd(self):
         return self.cmd_queue.qsize()
 
+    # Function: count_data
+    # How many elements are in the data queue?
     def count_data(self):
         return self.data_queue.qsize()
 
+    # Function: empty_cmd
+    # Is the queue empty?
     def empty_cmd(self):
         return self.cmd_queue.empty()
 
+    # Function: empty_data
+    # Is the queue empty?
     def empty_data(self):
         return self.data_queue.empty()
 
+    # Function: idle
+    # Is _run waiting to process data?
     def idle(self):
         return not self.active
 
+    # Function: clear_cmd
+    # Clear the command queue
     def clear_cmd(self):
         while not self.cmd_queue.empty():
             frame = self.cmd_queue.get_nowait()
 
+    # Function: clear_data
+    # Clear the data queue
     def clear_data(self):
         while not self.data_queue.empty():
             frame = self.data_queue.get_nowait()
 
+    # Function: wait_cmd
+    # Wait for command data
     async def wait_cmd(self, timeout=0, timeout_unit='nsreg_data'):
         if not self.empty_cmd():
             return
@@ -305,6 +379,8 @@ class MILSTD1553Sink:
         else:
             await self.sync.wait()
 
+    # Function: wait_data
+    # Wait for data data.
     async def wait_data(self, timeout=0, timeout_unit='nsreg_data'):
         if not self.empty_data():
             return
@@ -314,6 +390,8 @@ class MILSTD1553Sink:
         else:
             await self.sync.wait()
 
+    # Function: _run
+    # Thread that takes input data in mil-std-1553 format and puts it in the proper command or data queue.
     async def _run(self, data):
         self.active = False
 

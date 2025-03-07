@@ -2,7 +2,7 @@
 ### cocotb extension for mil-std-1553 communications
 
 
-![image](img/AFRL.png)
+![image](docs/manual/img/AFRL.png)
 
 
 ---

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("_ba",["Variable"],[["_base_delay",,[["MILSTD1553Sink.self",,,,0,"File:mil_std_1553.py:MILSTD1553Sink.self._base_delay","PythonClass:MILSTD1553Sink:self._base_delay"],["MILSTD1553Source.self",,,,0,"File:mil_std_1553.py:MILSTD1553Source.self._base_delay","PythonClass:MILSTD1553Source:self._base_delay"]]]]);
