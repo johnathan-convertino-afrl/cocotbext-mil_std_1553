@@ -66,10 +66,12 @@ import cocotb
 from cocotb.triggers import Timer
 from cocotb.regression import TestFactory
 
-import sys
-sys.path.append("../../")
-
-from cocotbext.mil_std_1553 import MILSTD1553Source, MILSTD1553Sink
+try:
+    from cocotbext.mil_std_1553 import MILSTD1553Source, MILSTD1553Sink
+except ImportError as e:
+    import sys
+    sys.path.append("../../")
+    from cocotbext.mil_std_1553 import MILSTD1553Source, MILSTD1553Sink
 
 # Class: TB
 # Create the device under test which is the source/sink.
