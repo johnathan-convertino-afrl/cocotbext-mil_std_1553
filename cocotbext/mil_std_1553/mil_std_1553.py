@@ -117,6 +117,7 @@ class MILSTD1553Source:
         if(self._check_type(data)):
             self.queue.put_nowait(self._cmd_sync)
             await self.queue.put(data)
+            await self._idle.wait()
             self._idle.clear()
 
     # Function: write_data
@@ -125,6 +126,7 @@ class MILSTD1553Source:
         if(self._check_type(data)):
             self.queue.put_nowait(self._data_sync)
             await self.queue.put(data)
+            await self._idle.wait()
             self._idle.clear()
 
     # Function: write_nowait_cmd
