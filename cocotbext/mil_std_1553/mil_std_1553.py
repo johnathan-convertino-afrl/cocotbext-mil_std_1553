@@ -93,7 +93,7 @@ class MILSTD1553Source:
         # Variable: self._idle
         # Event trigger for cocotb
         self._idle = Event()
-        self._idle.set()
+        self._idle.clear()
 
         # Variable: self._data
         # Event trigger for cocotb
@@ -216,10 +216,6 @@ class MILSTD1553Source:
         self.active = False
 
         while True:
-            if self.empty():
-                self.active = False
-                self._idle.set()
-
             sync = await self.queue.get()
 
             out_data = await self.queue.get()
@@ -250,6 +246,8 @@ class MILSTD1553Source:
             data.value = parity | ((~parity & 1) << 1)
             await self._base_delay
             data.value = 0
+
+            self._idle.set()
 
             self.active = False
 
