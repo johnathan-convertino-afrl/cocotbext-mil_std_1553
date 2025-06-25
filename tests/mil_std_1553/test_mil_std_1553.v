@@ -67,7 +67,8 @@
  */
 module test_mil_std_1553
 (
-    inout  [1:0] data
+    inout  [1:0] data,
+    inout        arstn
 );
 
   //copy pasta, fst generation

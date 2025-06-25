@@ -82,8 +82,8 @@ class TB:
         self.log = logging.getLogger("cocotb.tb")
         self.log.setLevel(logging.DEBUG)
 
-        self.source  = MILSTD1553Source(dut.data)
-        self.sink = MILSTD1553Sink(dut.data)
+        self.source  = MILSTD1553Source(dut.data, dut.arstn)
+        self.sink = MILSTD1553Sink(dut.data, dut.arstn)
 
 
 # Function: run_test
@@ -91,6 +91,8 @@ class TB:
 async def run_test(dut, payload_data=None):
 
     tb = TB(dut)
+    
+    dut.arstn.value = 1
 
     await Timer(10, 'us')
 

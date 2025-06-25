@@ -59,7 +59,7 @@ import logging
 import cocotb
 from cocotb.queue import Queue
 from cocotb.binary import BinaryValue
-from cocotb.triggers import FallingEdge, Timer, First, Event, Edge
+from cocotb.triggers import FallingEdge, RisingEdge, Timer, First, Event, Edge
 
 from manchester_code import encode, decode, decode_bits
 
@@ -70,11 +70,13 @@ from .version import __version__
 class MILSTD1553Source:
     # Constructor: __init__
     # Initialize the object
-    def __init__(self, data, *args, **kwargs):
+    def __init__(self, data, rstn, *args, **kwargs):
         self.log = logging.getLogger(f"cocotb.{data._path}")
         # Variable: self._data
         # Set internal data connection to 1553 differential bus
         self._data = data
+        #reset
+        self._rstn = rstn
 
         self.log.info("MIL-STD-1553 source")
         self.log.info("cocotbext-mil_std_1553 version %s", __version__)
@@ -111,7 +113,7 @@ class MILSTD1553Source:
             self._run_cr.kill()
         self._run_cr = cocotb.start_soon(self._run(self._data))
 
-    # Function: write_cmd
+    # Function: write_cmdSYNTH_PARITY_BITS_PER_TRANS
     # Write data to send that uses the command sync
     async def write_cmd(self, data):
         if(self._check_type(data)):
@@ -182,12 +184,12 @@ class MILSTD1553Source:
     # Function: _cmd_sync
     # Generate a command sync on the diff output
     async def _cmd_sync(self, data):
-        data.value = 2
+        data.value = 1
         await self._base_delay
         await self._base_delay
         await self._base_delay
 
-        data.value = 1
+        data.value = 2
         await self._base_delay
         await self._base_delay
         await self._base_delay
@@ -195,12 +197,12 @@ class MILSTD1553Source:
     # Function: _data_sync
     # Generate a data sync on the diff output
     async def _data_sync(self, data):
-        data.value = 1
+        data.value = 2
         await self._base_delay
         await self._base_delay
         await self._base_delay
 
-        data.value = 2
+        data.value = 1
         await self._base_delay
         await self._base_delay
         await self._base_delay
@@ -216,6 +218,10 @@ class MILSTD1553Source:
         self.active = False
 
         while True:
+            if not self._rstn.value:
+                await RisingEdge(self._rstn)
+                continue
+                
             sync = await self.queue.get()
 
             out_data = await self.queue.get()
@@ -238,12 +244,12 @@ class MILSTD1553Source:
             for byte in encode_out_data:
                 for x in reversed(range(8)):
                     bit = ((byte >> x) & 1)
-                    data.value = (bit << 1) | (~bit & 1)
+                    data.value = ((~bit & 1) << 1) | (bit & 1)
                     await self._base_delay
 
-            data.value = (~parity & 1) | ((parity & 1) << 1)
+            data.value = (parity & 1)  | ((~parity & 1) << 1)
             await self._base_delay
-            data.value = parity | ((~parity & 1) << 1)
+            data.value = (~parity & 1) | ((parity & 1) << 1)
             await self._base_delay
             data.value = 0
 
@@ -257,11 +263,13 @@ class MILSTD1553Sink:
 
     # Constructor: __init__
     # Initialize the object
-    def __init__(self, data, *args, **kwargs):
+    def __init__(self, data, rstn, *args, **kwargs):
         self.log = logging.getLogger(f"cocotb.{data._path}")
         # Variable: self._data
         # Set internal data connection to 1553 differential bus
         self._data = data
+        
+        self._rstn = rstn
 
         self.log.info("MIL-STD-1553 sink")
         self.log.info("cocotbext-mil_std_1553 version %s", __version__)
@@ -285,11 +293,11 @@ class MILSTD1553Sink:
 
         # Variable: _cmd_sync
         # command sync array value
-        self._cmd_sync = [BinaryValue("10"), BinaryValue("01")]
+        self._cmd_sync = [BinaryValue("01"), BinaryValue("10")]
 
         # Variable: _data_sync
         # data sync array value
-        self._data_sync = [BinaryValue("01"), BinaryValue("10")]
+        self._data_sync = [BinaryValue("10"), BinaryValue("01")]
 
         # Variable: self._run_cr
         # Thread instance of _run method
@@ -331,7 +339,7 @@ class MILSTD1553Sink:
         data = self.data_queue.get_nowait()
         return data
 
-    # Function: count_cmd
+    # Function: count_cmd10
     # How many elements are in the command queue?
     def count_cmd(self):
         return self.cmd_queue.qsize()
@@ -396,11 +404,15 @@ class MILSTD1553Sink:
         self.active = False
 
         while True:
+            invalid_logic = ["z", "x"]
             sync_value = []
 
             decode_in_data = bytearray(4)
 
             parity = 0
+            
+            if not self._rstn.value:
+                await RisingEdge(self._rstn)
 
             if(data.value[0] == data.value[1]):
                 await Edge(data)
@@ -408,31 +420,33 @@ class MILSTD1553Sink:
             if(data.value[0] == data.value[1]):
                 self.log.info("false trigger, data values equal")
                 continue
+            
+            if any(x in data.value.binstr for x in invalid_logic):
+                self.log.info("Invalid data bit")
+                continue
 
             self.active = True
 
-            await self._base_delay_half
+            await self._base_delay
 
             sync_value.append(data.value)
 
             await Edge(data)
 
-            await self._base_delay_half
+            await self._base_delay
 
             sync_value.append(data.value)
 
-            await self._base_delay_half
-
             await self._base_delay
             await self._base_delay
-            await self._base_delay_half
-
+            await self._base_delay
+            
             for i in range(len(decode_in_data)):
                 for x in reversed(range(8)):
-                    decode_in_data[i] |= ((~data.value.integer & 1) << x)
+                    decode_in_data[i] |= ((data.value.integer & 1) << x)
                     await self._base_delay
 
-            parity = ~data.value.integer & 1
+            parity = data.value.integer & 1
 
             org_parity = parity
 
